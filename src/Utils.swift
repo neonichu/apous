@@ -29,6 +29,13 @@ func canonicalPath(item: String) throws -> String {
     
     var isDirectory: ObjCBool = false
     if NSFileManager.defaultManager().fileExistsAtPath(path, isDirectory: &isDirectory) {
+        if let cpath = path.cStringUsingEncoding(NSUTF8StringEncoding) {
+            let realPath = realpath(cpath, nil)
+            if let realPath = String(CString: realPath, encoding: NSUTF8StringEncoding) {
+                return realPath
+            }
+        }
+
         return path
     }
     
