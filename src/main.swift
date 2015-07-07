@@ -71,11 +71,14 @@ func run() throws {
         pods.run("install", "--no-integrate")
     }
 
-    let files = filesAtPath(path)
+    let files = Set(filesAtPath(path) + [scriptItem[0]])
 
+    let hashBangRegex = try NSRegularExpression(pattern: "^#!.*", options: .CaseInsensitive)
     var script = ""
     for f in files {
-        script += try "// file: \(f)\n" + String(contentsOfFile: f, encoding: NSUTF8StringEncoding) + "\n"
+        var fileContents = try String(contentsOfFile: f, encoding: NSUTF8StringEncoding)
+        fileContents = hashBangRegex.stringByReplacingMatchesInString(fileContents, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, fileContents.lengthOfBytesUsingEncoding(NSUTF8StringEncoding)), withTemplate: "")
+        script += "// file: \(f)\n" + fileContents + "\n"
     }
 
     let scriptPath = path.stringByAppendingPathComponent(ApousScriptFile)

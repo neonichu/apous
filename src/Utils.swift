@@ -12,7 +12,8 @@ import Foundation
 /// This is
 func canonicalPath(item: String) throws -> String {
     func extract() -> String {
-        if item.pathExtension == "swift" {
+        var isDirectory: ObjCBool = false
+        if NSFileManager.defaultManager().fileExistsAtPath(item, isDirectory: &isDirectory) && !isDirectory {
             let path = item.stringByDeletingLastPathComponent
             if path == "" {
                 return NSFileManager.defaultManager().currentDirectoryPath
